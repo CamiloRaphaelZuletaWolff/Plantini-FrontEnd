@@ -1,0 +1,82 @@
+{
+  "expo": {
+    "name": "VoluntariadoUPB",
+    "slug": "VoluntariadoUPB",
+    "scheme": "voluntariadoupb",
+    "version": "1.0.0",
+    "extra": {
+      "GEMINI_BASE_URL": "http://localhost:3000",
+      "eas": {
+        "projectId": "e54d9d9b-878c-4ca5-a3be-0f41ad533644"
+      }
+    },
+    "orientation": "portrait",
+    "icon": "./assets/LogoUPB.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/LogoUPB.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "bundleIdentifier": "com.upb.routesApp",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "VoluntariadoUPB necesita acceder a tu ubicación para mostrarte oportunidades de voluntariado cercanas, calcular rutas y tiempos de viaje.",
+        "NSLocationAlwaysUsageDescription": "VoluntariadoUPB necesita acceder a tu ubicación para enviarte notificaciones sobre eventos cercanos.",
+        "LSApplicationQueriesSchemes": [
+          "maps",
+          "comgooglemaps",
+          "comgooglemaps-x-callback"
+        ]
+      },
+      "config": {
+        "googleMapsApiKey": "YOUR_IOS_GOOGLE_MAPS_API_KEY"
+      }
+    },
+    "android": {
+      "package": "com.upb.routesApp",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/LogoUPB.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED",
+        "SCHEDULE_EXACT_ALARM",
+        "USE_EXACT_ALARM"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "VoluntariadoUPB necesita acceder a tu ubicación para mostrarte oportunidades de voluntariado cercanas, calcular rutas y tiempos de viaje."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#217868",
+          "sounds": ["./assets/notification-sound.wav"]
+        }
+      ]
+    ]
+  }
+}
