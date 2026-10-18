@@ -11,7 +11,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from '../../../../src/components/map/mapPrimitives';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, router } from 'expo-router';
 import { supabase } from '../../../../config/supabase';

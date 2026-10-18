@@ -7,17 +7,21 @@ import { useAuthStore } from '../src/store/useAuthStore';
 import { useNotifications } from '../src/hooks';
 import { supabase } from '../config/supabase';
 import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
 
 // Configure foreground notification behaviour once at module level.
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// Local/push notifications are native-only; skip on web.
+if (Platform.OS !== 'web') {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 const RootStack = () => (
   <Stack screenOptions={{ headerShown: false }}>

@@ -1,6 +1,7 @@
 import { makeId } from '../utils/uuid';
 import GEMINI_BASE_URL from '../../../config/gemini';
 import type { ChatFile } from '../types/Message';
+import { appendFormFile, type FormFileDescriptor } from '../../../utils/formDataFile';
 
 const BASE_URL = GEMINI_BASE_URL;
 
@@ -11,19 +12,8 @@ export type ChunkHandler = (chunk: string) => void;
 /** Returns the current Supabase access token, or null if not signed in. */
 export type TokenGetter = () => Promise<string | null>;
 
-/**
- * React Native's `FormData` accepts a `{ uri, type, name }` blob descriptor
- * for file uploads — a shape that the DOM lib types don't model. This type
- * documents what we're actually appending and centralises the unavoidable
- * cast to `any` at the FormData boundary.
- */
-type RNFileBlobDescriptor = {
-  uri: string;
-  type: string;
-  name: string;
-};
-
-function toRNBlob(file: ChatFile, fallbackName: string, fallbackMime: string): RNFileBlobDescriptor {
+/** Normalises a picked file into the descriptor `appendFormFile` expects. */
+function toFormFile(file: ChatFile, fallbackName: string, fallbackMime: string): FormFileDescriptor {
   return {
     uri: file.uri,
     name: file.name ?? fallbackName,
@@ -61,22 +51,44 @@ export default class ChatApi {
     form.append('prompt', prompt);
     form.append('chatId', this.chatId);
 
-    files?.forEach((f) => {
-      // React Native FormData accepts the file blob descriptor object; the
-      // DOM `Blob` types don't represent this shape, hence the cast.
-      form.append('files', toRNBlob(f, 'image.jpg', 'image/jpeg') as unknown as Blob);
-    });
+    for (const f of files ?? []) {
+      await appendFormFile(form, 'files', toFormFile(f, 'image.jpg', 'image/jpeg'));
+    }
 
     const headers = await this.authHeader();
-    const res = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: form as unknown as BodyInit,
-      signal,
-    });
+    if (__DEV__) {
+      console.log(
+        '[chatApi] POST', url,
+        'auth=', headers.Authorization ? 'yes' : 'NO TOKEN',
+        'chatId=', this.chatId,
+        'promptLen=', prompt.length,
+      );
+    }
+
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: form as unknown as BodyInit,
+        signal,
+      });
+    } catch (networkError) {
+      if (__DEV__) {
+        console.error('[chatApi] fetch failed (network):', networkError);
+      }
+      throw networkError;
+    }
+
+    if (__DEV__) {
+      console.log('[chatApi] response status:', res.status);
+    }
 
     if (!res.ok) {
       const body = await res.text();
+      if (__DEV__) {
+        console.error('[chatApi] non-2xx body:', body.slice(0, 500));
+      }
       const error = new Error(`HTTP ${res.status}: ${body}`) as Error & { status?: number };
       error.status = res.status;
       throw error;
@@ -126,9 +138,9 @@ export default class ChatApi {
     const url = `${BASE_URL}/api/gemini/basic-prompt`;
     const form = new FormData();
     form.append('prompt', prompt);
-    files?.forEach((f) => {
-      form.append('files', toRNBlob(f, 'file', 'application/octet-stream') as unknown as Blob);
-    });
+    for (const f of files ?? []) {
+      await appendFormFile(form, 'files', toFormFile(f, 'file', 'application/octet-stream'));
+    }
 
     const headers = await this.authHeader();
     const res = await fetch(url, {

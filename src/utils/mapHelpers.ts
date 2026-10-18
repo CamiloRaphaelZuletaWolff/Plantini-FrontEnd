@@ -1,4 +1,5 @@
-import { Region } from 'react-native-maps';
+// Type-only: erased at build time, so this file is safe on web too.
+import type { Region } from 'react-native-maps';
 import { Platform } from 'react-native';
 
 import { CategoriaType } from '../types';

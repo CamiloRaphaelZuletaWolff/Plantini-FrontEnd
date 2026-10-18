@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Region } from '../../../../src/components/map/mapPrimitives';
 import { Ionicons } from '@expo/vector-icons';
 
 import {

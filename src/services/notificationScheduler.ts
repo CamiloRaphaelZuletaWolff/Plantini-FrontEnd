@@ -3,6 +3,7 @@ import * as TaskManager from 'expo-task-manager';
 import * as BackgroundFetch from 'expo-background-fetch';
 import { supabase } from '../../config/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 // Nombre de la tarea en background
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND_NOTIFICATION_TASK';
@@ -271,6 +272,7 @@ export class NotificationScheduler {
    * Registra tarea en background para verificar cambios
    */
   private async registerBackgroundTask() {
+    if (Platform.OS === 'web') return; // background fetch is native-only
     try {
       await BackgroundFetch.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK, {
         minimumInterval: 60 * 15, // 15 minutos
@@ -361,16 +363,19 @@ export class NotificationScheduler {
 /**
  * Define la tarea en background
  */
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
-  try {
-    // Aquí podrías hacer verificaciones adicionales si es necesario
-    // Por ahora, los listeners en tiempo real manejan la mayoría
+// Background tasks don't exist on web; defining one there only logs errors.
+if (Platform.OS !== 'web') {
+  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
+    try {
+      // Aquí podrías hacer verificaciones adicionales si es necesario
+      // Por ahora, los listeners en tiempo real manejan la mayoría
     
-    return BackgroundFetch.BackgroundFetchResult.NewData;
-  } catch (error) {
-    console.error('Error en background task:', error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
-  }
-});
+      return BackgroundFetch.BackgroundFetchResult.NewData;
+    } catch (error) {
+      console.error('Error en background task:', error);
+      return BackgroundFetch.BackgroundFetchResult.Failed;
+    }
+  });
+}
 
 export const notificationScheduler = NotificationScheduler.getInstance();

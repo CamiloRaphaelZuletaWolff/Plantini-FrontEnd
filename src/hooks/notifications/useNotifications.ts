@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -68,7 +68,8 @@ export function useNotifications() {
   useEffect(() => {
     mountedRef.current = true;
 
-    if (!user) {
+    // Push/local notifications and background tasks are native-only.
+    if (!user || Platform.OS === 'web') {
       return () => {
         mountedRef.current = false;
       };

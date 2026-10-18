@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors, useUserStats, useUserGoal } from '../../../src/hooks';
 import { GoalModal } from '../../../src/components';
 import type { ThemeColors } from '../../theme/colors';
-import { PlantiniHomeCard } from '../../../src/features/chat/components/PlantiniHomeCard';
+import { PlantiniHomeCard } from '../../../src/components/chatBot';
 
 const { width: screenWidth } = Dimensions.get('window');
 

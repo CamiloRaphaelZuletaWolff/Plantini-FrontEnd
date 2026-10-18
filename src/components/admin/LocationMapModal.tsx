@@ -13,7 +13,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from '../map/mapPrimitives';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../../hooks';
 import { LA_PAZ_COORDINATES } from '../../utils/mapHelpers';

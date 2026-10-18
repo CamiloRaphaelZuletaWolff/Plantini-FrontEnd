@@ -5,7 +5,6 @@
     "scheme": "voluntariadoupb",
     "version": "1.0.0",
     "extra": {
-      "GEMINI_BASE_URL": "http://localhost:3000",
       "eas": {
         "projectId": "e54d9d9b-878c-4ca5-a3be-0f41ad533644"
       }

@@ -116,31 +116,34 @@ export const CreateOportunidadModal: React.FC<OportunidadModalProps> = ({
         return;
       }
 
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: '✅ Oportunidad Creada',
-          body: `"${formData.titulo}" se publicó exitosamente. Los usuarios ya pueden verla.`,
-          data: { type: 'oportunidad_creada', oportunidadId: result.id },
-          sound: true,
-          priority: Notifications.AndroidNotificationPriority.DEFAULT,
-        },
-        trigger: null,
-      });
-
-      if (__DEV__) {
+      // Local notifications are native-only (they throw on web).
+      if (Platform.OS !== 'web') {
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: '🆕 Nueva Oportunidad Disponible',
-            body: `${formData.titulo} - ${CATEGORIAS.find((c) => c.key === formData.categoria)?.label}`,
-            data: { type: 'nueva_oportunidad', oportunidadId: result.id, isDemo: true },
+            title: '✅ Oportunidad Creada',
+            body: `"${formData.titulo}" se publicó exitosamente. Los usuarios ya pueden verla.`,
+            data: { type: 'oportunidad_creada', oportunidadId: result.id },
             sound: true,
             priority: Notifications.AndroidNotificationPriority.DEFAULT,
           },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: new Date(Date.now() + 5000),
-          },
+          trigger: null,
         });
+
+        if (__DEV__) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: '🆕 Nueva Oportunidad Disponible',
+              body: `${formData.titulo} - ${CATEGORIAS.find((c) => c.key === formData.categoria)?.label}`,
+              data: { type: 'nueva_oportunidad', oportunidadId: result.id, isDemo: true },
+              sound: true,
+              priority: Notifications.AndroidNotificationPriority.DEFAULT,
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.DATE,
+              date: new Date(Date.now() + 5000),
+            },
+          });
+        }
       }
 
       Alert.alert('Éxito', 'Oportunidad creada correctamente');

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { supabase } from '../../../config/supabase';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -71,20 +72,24 @@ export const usePostulacion = () => {
       // cupos_disponibles is decremented atomically by the DB trigger
       // (trg_postulaciones_cupos) — no client-side update needed.
 
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: '✅ Postulación Enviada',
-          body: `Tu postulación a "${oportunidad.titulo}" fue enviada exitosamente. Te notificaremos cuando sea revisada.`,
-          data: {
-            type: 'postulacion_enviada',
-            postulacionId: inserted.id,
-            oportunidadId: oportunidad.id,
+      // Local notifications are native-only (they throw on web), and the
+      // postulación is already saved at this point.
+      if (Platform.OS !== 'web') {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: '✅ Postulación Enviada',
+            body: `Tu postulación a "${oportunidad.titulo}" fue enviada exitosamente. Te notificaremos cuando sea revisada.`,
+            data: {
+              type: 'postulacion_enviada',
+              postulacionId: inserted.id,
+              oportunidadId: oportunidad.id,
+            },
+            sound: true,
+            priority: Notifications.AndroidNotificationPriority.HIGH,
           },
-          sound: true,
-          priority: Notifications.AndroidNotificationPriority.HIGH,
-        },
-        trigger: null,
-      });
+          trigger: null,
+        });
+      }
 
       safeSetLoading(false);
       return { success: true };
