@@ -40,3 +40,19 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+# env: solo se publica .env.example
+.env.*
+!.env.example
+
+# herramientas de IA / agentes y grafo generado (no son parte del producto)
+.claude/
+.agents/
+skills-lock.json
+graphify-out/
+
+# deploy y tests locales
+.vercel/
+test-results/
+playwright-report/
+coverage/
+*.log
