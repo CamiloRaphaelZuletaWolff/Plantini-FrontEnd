@@ -73,7 +73,9 @@ export const useLocationManager = () => {
     try {
       if (mountedRef.current) setSaving(true);
 
-      const { error: updateError } = await supabase
+      // RLS only lets organizers edit their own oportunidades (admins: all)
+      // and filters the rest silently, so check that a row was updated.
+      const { data, error: updateError } = await supabase
         .from('oportunidades')
         .update({
           ubicacion: {
@@ -82,9 +84,13 @@ export const useLocationManager = () => {
             direccion: tempLocation.direccion.trim(),
           },
         })
-        .eq('id', selectedOportunidad.id);
+        .eq('id', selectedOportunidad.id)
+        .select('id');
 
       if (updateError) throw updateError;
+      if (!data || data.length === 0) {
+        throw new Error('No tienes permiso para editar esta oportunidad');
+      }
 
       if (!mountedRef.current) return;
       setSuccessMessage('Ubicación guardada correctamente');
@@ -109,12 +115,16 @@ export const useLocationManager = () => {
     if (!oportunidadToDelete) return;
 
     try {
-      const { error: updateError } = await supabase
+      const { data, error: updateError } = await supabase
         .from('oportunidades')
         .update({ ubicacion: null })
-        .eq('id', oportunidadToDelete.id);
+        .eq('id', oportunidadToDelete.id)
+        .select('id');
 
       if (updateError) throw updateError;
+      if (!data || data.length === 0) {
+        throw new Error('No tienes permiso para editar esta oportunidad');
+      }
 
       if (!mountedRef.current) return;
       setSuccessMessage('Ubicación eliminada correctamente');

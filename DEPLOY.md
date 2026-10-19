@@ -55,5 +55,13 @@ npx serve dist --single   # abre http://localhost:3000
 - **Notificaciones push/locales y tareas en segundo plano:** solo móvil; en web se omiten sin errores.
 - **Chatbot:** si el backend gratuito de Render estaba dormido, la primera respuesta tarda ~1 min y la
   app muestra *"Despertando el servidor gratuito, ~1 min…"*.
-- **Login:** email + contraseña. Usuarios demo (creados por el seed del backend):
-  `estudiante@upb.edu.bo`, `organizador@upb.edu.bo`, `admin@upb.edu.bo` — contraseña `Password123!`.
+- **Login:** email + contraseña. Cuenta demo pública (creada por el seed del backend):
+  `estudiante@upb.edu.bo` / `Password123!` (o el valor de `SEED_STUDENT_PASSWORD`). Las cuentas
+  `organizador@upb.edu.bo` y `admin@upb.edu.bo` usan contraseñas secretas (`SEED_ORGANIZER_PASSWORD`,
+  `SEED_ADMIN_PASSWORD`): **no las publiques** (ver *Cargar datos de demo* en el DEPLOY.md del backend).
+- **Cabeceras de seguridad:** `vercel.json` añade CSP, `X-Frame-Options: DENY`, `nosniff`,
+  `Referrer-Policy` y HSTS. La CSP permite conectarse a `*.supabase.co` y `*.onrender.com`; si
+  despliegas el backend en otro dominio, añádelo a `connect-src` en `vercel.json`.
+- **Sesión en web:** Supabase guarda la sesión en `localStorage` (comportamiento estándar de
+  supabase-js en el navegador). Por eso importa que no haya XSS: la app no usa
+  `dangerouslySetInnerHTML` y el chat y el mapa renderizan texto, no HTML.

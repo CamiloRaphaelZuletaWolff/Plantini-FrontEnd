@@ -187,12 +187,19 @@ export const usePostulaciones = () => {
     newStatus: PostulacionItem['status']
   ) => {
     try {
-      const { error: updateError } = await supabase
+      // `.select('id')` returns the rows actually updated: RLS silently
+      // filters rows the caller may not manage (e.g. an organizer reviewing
+      // another organizer's application), so 0 rows means "not allowed".
+      const { data, error: updateError } = await supabase
         .from('postulaciones')
         .update({ estado: newStatus })
-        .eq('id', postulacionId);
+        .eq('id', postulacionId)
+        .select('id');
 
       if (updateError) throw updateError;
+      if (!data || data.length === 0) {
+        throw new Error('No tienes permiso para actualizar esta postulación');
+      }
       return true;
     } catch (err) {
       if (__DEV__) console.error('Error updating postulacion status:', err);
